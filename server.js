@@ -1,6 +1,6 @@
 const WebSocket = require("ws");
 
-const wss = new WebSocket.Server({port: 8081,host:'127.0.0.1'});
+const wss = new WebSocket.Server({port: 8080,host:'127.0.0.1'});
 
 var connections = [];
 var idd = 0;
@@ -13,7 +13,10 @@ wss.on("connection", ws => {
         y:0,
         id: idd
     });
-    ws.send(JSON.stringify({id:idd}));
+    if (ws.readyState == ws.OPEN){
+        ws.send(JSON.stringify({id:idd}));
+
+    }
     console.log("Create new user: " + idd);
     ws.on("message", message => {
         
@@ -43,12 +46,13 @@ function update(){
 
         for (let i= 0; i<connections.length; i++){
             
-            
-            ws.send(JSON.stringify({
-                x: connections[i].x,
-                y: connections[i].y,
-                first: connections[i].id
-            }));
+            if (ws.readyState == ws.OPEN){
+                ws.send(JSON.stringify({
+                    x: connections[i].x,
+                    y: connections[i].y,
+                    first: connections[i].id
+                }));
+            }
         }
     }
 }
